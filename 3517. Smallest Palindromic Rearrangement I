@@ -1,0 +1,25 @@
+class Solution {
+    public String smallestPalindrome(String s) {
+        char middle = ' ';
+        int[] freq = new int[128];
+
+        for (char c : s.toCharArray())
+            freq[c]++;
+
+        for (int i = 0; i < 128; i++)
+            if (freq[i] % 2 == 1) {
+                middle = (char) i;
+                freq[i]--;
+                break;
+            }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < 128; i++)
+            sb.append(String.valueOf((char) i).repeat(freq[i] / 2));
+
+        return sb.toString()
+                + (middle == ' ' ? "" : middle)
+                + sb.reverse().toString();
+    }
+}
