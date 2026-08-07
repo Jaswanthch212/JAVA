@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        // Read N (size of the array)
+        int N = Integer.parseInt(br.readLine().trim());
+        
+        // Read array elements
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        // Stack to simulate the current state of the modified array
+        int[] stack = new int[N];
+        int top = -1;
+        
+        long totalSum = 0; // Tracks the total sum of the elements left in the array
+        
+        for (int i = 0; i < N; i++) {
+            int current = Integer.parseInt(st.nextToken());
+            
+            if (current >= 0) {
+                // Positive elements are just added to the end
+                top++;
+                stack[top] = current;
+                totalSum += current;
+            } else {
+                long target = Math.abs((long) current);
+                long removedSum = 0;
+                
+                // Remove consecutive elements moving left until their sum >= |X|
+                while (top >= 0 && removedSum < target) {
+                    int removedElement = stack[top];
+                    top--;
+                    removedSum += removedElement;
+                    totalSum -= removedElement;
+                }
+                
+                // Replace X with its absolute value |X|
+                top++;
+                stack[top] = (int) target;
+                totalSum += target;
+            }
+        }
+        
+        // Print the final sum of the remaining array elements
+        System.out.println(totalSum);
+    }
+}
