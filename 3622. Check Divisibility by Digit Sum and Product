@@ -1,0 +1,14 @@
+class Solution {
+    public boolean checkDivisibility(int n) {
+        int original = n;
+        int numSum = 0;
+        int product = 1;
+        while(original > 0){
+            int digit = original % 10;
+            numSum += digit;
+            product *= digit;
+            original /= 10;
+        }
+        return n % (numSum + product) == 0;
+    }
+}
