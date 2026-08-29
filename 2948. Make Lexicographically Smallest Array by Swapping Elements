@@ -1,0 +1,52 @@
+class Solution {
+    public int[] lexicographicallySmallestArray(int[] nums, int limit) {
+        int n = nums.length;
+        
+        // Sorted copy of values
+        int[] d = Arrays.copyOf(nums, n);
+        Arrays.sort(d);
+        
+        // Original indices, sorted by their corresponding values
+        Integer[] indices = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            indices[i] = i;
+        }
+        
+        // Sort indices according to their corresponding values in original array
+        Arrays.sort(indices, (a, b) -> Integer.compare(nums[a], nums[b]));
+        
+        int start = 0;
+        
+        // Process groups of swappable elements
+        while (start < n) {
+            int end = start;
+            
+            // Find the end of current group
+            // Elements belong to same group if consecutive sorted values differ by <= limit
+            while (end + 1 < n &&
+                   d[end + 1] - d[end] <= limit) {
+                end++;
+            }
+            
+            int groupSize = end - start + 1;
+            
+            // Get original positions of elements in this group
+            int[] groupIndices = new int[groupSize];
+            for (int i = 0; i < groupSize; i++) {
+                groupIndices[i] = indices[start + i];
+            }
+            
+            // Sort positions to place smallest values at earliest positions
+            Arrays.sort(groupIndices);
+            
+            // Assign sorted values to sorted positions
+            for (int i = 0; i < groupSize; i++) {
+                nums[groupIndices[i]] = d[start + i];
+            }
+            
+            start = end + 1;
+        }
+        
+        return nums;
+    }
+}
