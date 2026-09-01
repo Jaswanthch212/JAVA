@@ -1,0 +1,78 @@
+class Node {
+    int x, y, e, m, s;
+    Node(int x, int y, int e, int m, int s){
+        this.x = x;
+        this.y = y;
+        this.e = e;
+        this.m = m;
+        this.s = s;
+    }
+}
+
+class Solution {
+    public int minMoves(String[] classroom, int energy) {
+        int m = classroom.length;
+        int n = classroom[0].length();
+        char[][] matrix = new char[m][n];
+        int numOfL = 0;
+        int sx = 0, sy = 0;
+        Map<String, Integer> litterMap = new HashMap<>();
+        
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                matrix[i][j] = classroom[i].charAt(j);
+                if(matrix[i][j] == 'L'){
+                    litterMap.put(i + "," + j, numOfL++);
+                }
+                if(matrix[i][j] == 'S'){
+                    sx = i;
+                    sy = j;
+                }
+            }
+        }
+
+        if(numOfL == 0) return 0;
+        int fullMask = (1 << numOfL) - 1;
+
+        boolean[][][][] visited = new boolean[m][n][fullMask + 1][energy + 1];
+        Queue<Node> q = new LinkedList<>();
+        q.offer(new Node(sx, sy, energy, 0, 0));
+        visited[sx][sy][0][energy] = true;
+
+        int[] dx = {-1, 0, 1, 0};
+        int[] dy = {0, 1, 0, -1};
+
+        while (!q.isEmpty()) {
+            Node node = q.poll();
+
+            // Reset energy if on R
+            int currEnergy = (matrix[node.x][node.y] == 'R') ? energy : node.e;
+
+            // Collect litter
+            int currMask = node.m;
+            if (matrix[node.x][node.y] == 'L') {
+                currMask |= (1 << litterMap.get(node.x + "," + node.y));
+            }
+
+            // Done
+            if (currMask == fullMask) return node.s;
+
+            // Move to neighbors if energy permits
+            if (currEnergy == 0) continue;
+
+            for (int i = 0; i < 4; i++) {
+                int nx = node.x + dx[i];
+                int ny = node.y + dy[i];
+                int nextEnergy = currEnergy - 1;
+
+                if (nx < 0 || ny < 0 || nx >= m || ny >= n || matrix[nx][ny] == 'X') continue;
+                if (visited[nx][ny][currMask][nextEnergy]) continue;
+
+                visited[nx][ny][currMask][nextEnergy] = true;
+                q.offer(new Node(nx, ny, nextEnergy, currMask, node.s + 1));
+            }
+        }
+
+        return -1;
+    }
+}
