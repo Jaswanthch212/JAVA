@@ -1,0 +1,32 @@
+class Solution {
+    int k;
+    int len;
+    int prevLeft = Integer.MIN_VALUE; //Keeps track of the left boundary of the previously selected palindrome
+    public int maxPalindromes(String s, int k) {
+        len = s.length();
+        this.k = k;
+        int count = 0;
+        for(int i = 0; i < len; i++) {
+            count += checkPalindrom(s, i, i);     // Check for odd length palindromes
+            count += checkPalindrom(s, i, i + 1); // Check for even length palindromes
+        }
+
+        return count;
+    }
+
+    private int checkPalindrom(String s, int left, int right) {
+        int count = 0;
+        boolean check = true;
+        while(left >= 0 && left > prevLeft && right < len && s.charAt(left) == s.charAt(right)) {
+            if(right - left + 1 >= k) { //Check if the length is greater than or equal to k
+                count++;
+                check = false; //Set check false so that we don't consider overlapping substrings
+                break; //Break the loop as we have found a valid palindrome
+            }
+            right++;
+            left--;
+        }
+        if(!check) prevLeft = right; //Update the prevLeft so that we don't consider overlapping substrings
+        return count;
+    }
+}
