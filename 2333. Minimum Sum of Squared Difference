@@ -1,0 +1,40 @@
+class Solution {
+    public long minSumSquareDiff(int[] nums1, int[] nums2,
+                                 int k1, int k2) {
+        long k = (long) k1 + k2;
+        long diffSum = 0;
+        int maxDiff = 0;
+
+        int[] freq = new int[100001];
+
+        for (int i = 0; i < nums1.length; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+
+            if (diff > 0) {
+                freq[diff]++;
+                diffSum += diff;
+                maxDiff = Math.max(maxDiff, diff);
+            }
+        }
+
+        if (diffSum <= k) {
+            return 0;
+        }
+
+        for (int d = maxDiff; d > 0 && k > 0; d--) {
+            long take = Math.min((long) freq[d], k);
+
+            freq[d] -= (int) take;
+            freq[d - 1] += (int) take;
+            k -= take;
+        }
+
+        long result = 0;
+
+        for (int d = 1; d <= maxDiff; d++) {
+            result += (long) freq[d] * d * d;
+        }
+
+        return result;
+    }
+}
